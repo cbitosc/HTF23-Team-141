@@ -1,0 +1,50 @@
+// schema.prisma
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("POSTGRES_PRISMA_URL") // uses connection pooling
+}
+
+model User {
+    id               String   @id @default(cuid())
+    createdAt        DateTime @default(now())
+    email            String   @unique
+    name             String?
+    role             Role     @default(STUDENT)
+    password         String
+    adminOf          Club[]
+    registeredEvents Event[]
+}
+
+model Club {
+    id    String  @id @default(cuid())
+    name  String
+    admin User[]
+    event Event[]
+}
+
+model Event {
+    id               String   @id @default(cuid())
+    name             String
+    shortDescription String
+    longDescription  String
+    startsAt         DateTime
+    endsAt           DateTime
+    deadline         DateTime
+    venue            String?
+    mode             String
+    links            String[]
+    banner           String
+    hostedBy         Club[]
+    registeredUsers  User[]
+}
+
+enum Role {
+    STUDENT
+    CLUBADMIN
+    ADMIN
+}
